@@ -16,24 +16,13 @@
 </template>
 
 <script>
+import db from "../firebase/init.js";
+
 export default {
   name: "Index",
   data() {
     return {
-      smoothies: [
-        {
-          title: "Ninja Brew",
-          slug: "ninja-brew", //This refers to the URL friendly version of the title.
-          ingredients: ["banana", "coffee", "milk"],
-          id: "1"
-        },
-        {
-          title: "Morning Mood",
-          slug: "morning-mood",
-          ingredients: ["mango", "lime", "juice"],
-          id: "2"
-        }
-      ]
+      smoothies: []
     };
   },
   methods: {
@@ -42,6 +31,20 @@ export default {
         return smoothie.id != id;
       });
     }
+  },
+  created() {
+    //Fetch data from the Firestore DB
+    db.collection("Smoothies") //Where should the request be looking in the Database?
+      .get() //What do you want to do?
+      .then(snapshot => {
+        //Then we're going to grab all the instances in the Database.
+        snapshot.forEach(doc => {
+          //For each instance, we're going to search the doc for new items
+          let smoothie = doc.data(); //Each smoothis is going to have the info doc.data()
+          smoothie.id = doc.id; //We also want to add the auto generated Database ID as the smoothie ID.
+          this.smoothies.push(smoothie); //Now we want to push everything into the array in data() called smoothies: []
+        });
+      });
   }
 };
 </script>
