@@ -27,9 +27,22 @@ export default {
   },
   methods: {
     deleteSmoothie(id) {
-      this.smoothies = this.smoothies.filter(smoothie => {
-        return smoothie.id != id;
-      });
+      // //Delete from Local
+      // this.smoothies = this.smoothies.filter(smoothie => {
+      //   return smoothie.id != id;
+      // });
+
+      //Delete from Firestore
+      db.collection("Smoothies") //Where should the request be looking in the Database?
+        .doc(id) //What should we be looking for?
+        .delete() //What do you want to do with that .doc(id)? Delete it.
+        .then(() => {
+          //Great! It's gone from the DB. But now we need to update the front-end...
+          this.smoothies = this.smoothies.filter(smoothie => {
+            //This removes it from the front end as well.
+            return smoothie.id != id;
+          });
+        });
     }
   },
   created() {
